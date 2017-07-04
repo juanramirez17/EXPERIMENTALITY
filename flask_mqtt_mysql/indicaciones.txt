@@ -1,0 +1,32 @@
+Elementos requerido:
+--------------------
+1. Microcontrolador ESP8266 D1 mini
+2. Sensor de temperatura y humedad DHT11
+3. Computador con:
+	3.1 mosquito
+	3.2 atom + Platformio(En platformio libreria dht.h, PubSubClient.h) si tiene problema al cargar el codigo sudo chmod a+rw /dev/ttyUSB0
+	3.3 Python + paho.mqtt + falsk flaskext.mysql json (libreria)
+
+
+Implementación:
+---------------
+
+1) Creacion de Base de datos
+	CREATE DATABASE test_DB;
+	CREATE TABLE tbl_temperature (id BIGINT AUTO_INCREMENT, date_time DATETIME, temperature FLOAT, PRIMARY KEY (id));
+
+2) Conecte el ESP8266 a una protoboard y al sensor
+	GND
+	3,3 V
+	pin D3(ESP) a pin sgn(dht11) //datos desde el sensor DHT (tiene una resitencia de 10k a pull up) si su modulo esp no la tiene debe ponerla
+
+2) Ejecute en una terminal
+	mosquitto_sub -h localhost -t "mqtt" -v
+
+3) Ejecute en otra terminal
+	python app.py
+
+4) Cargue el programa "main.cpp" que esta en la carpeta ../ESP8266_mqtt_DHT11 al ESP8266 desde platformio
+	// verifique que se este conectando al wifi correctamente
+
+5) verifique que se esta guardando la información en la base de datos test_DB en la tabla tbl_temperature

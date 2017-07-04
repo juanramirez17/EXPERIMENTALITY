@@ -1,0 +1,57 @@
+# -*- coding: utf-8 -*-
+
+# flask + mqtt + mysql
+# Author :  Juan Pablo Ramirez G
+# Date : July 4, 2017 
+
+from flask import Flask, request
+from flaskext.mysql import MySQL
+import paho.mqtt.client as mqtt
+import json
+import datetime
+
+mysql = MySQL()
+port = 5000
+
+# initialization of mysql from flask
+app = Flask(__name__)
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
+app.config['MYSQL_DATABASE_DB'] = 'test_DB'
+app.config['MYSQL_DATABASE_HOST'] = '127.0.0.1'
+mysql.init_app(app)
+
+# Subscribe to topic
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+    client.subscribe("mqtt")
+
+# Recieve Messagge and save to database
+def on_message(client, userdata, msg):
+    print "MQTT Data Received..."
+    print(msg.topic+" "+str(msg.payload))
+    print "MQTT Topic: " + msg.topic
+    print "Data: " + msg.payload
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    json_Dict = json.loads(msg.payload)
+    data_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    temperature = json_Dict['Temperature']
+    cursor.execute("INSERT INTO tbl_temperature(date_time, temperature) VALUES (%s,%s)" ,(data_time, temperature))
+    conn.commit()
+    print "Saved in database "
+
+# Messagge in web page
+@app.route("/")
+def Authenticate():
+    return "Welcome to Python Flask App!"
+
+# Init app
+if __name__ == '__main__':
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.connect("192.168.0.17", 1883, 60)
+    client.publish("mqtt", 'publicandooo');
+    client.loop_start()
+    app.run(host='127.0.0.1', port=port)
