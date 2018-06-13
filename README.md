@@ -1,4 +1,4 @@
-# EXPERIMENTALITY
+# IOT (WEB, esp8266, mqtt, mysql, kalman filter)
 ## Contenido
 ### ESP8266_mqtt_DHT11 : Programación del wemos D1 mini, para conectarse a red Wifi, suscribirse a un topic y publicar los datos sensados por el sensor DHT11.
 ### flask_mqtt_mysql : Programa para suscribirse al topic al que se envia los datos sensados por el DHT11. Recibe los datos y los almacena en mySQL.
